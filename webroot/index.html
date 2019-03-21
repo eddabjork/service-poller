@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome to KRY</title>
+</head>
+<body>
+KRY status poller
+<ul id="service-list">
+</ul>
+<input type="text" id="url-name">
+<button id="post-service">Save</button>
+
+</body>
+<script>
+const listContainer = document.querySelector('#service-list');
+let servicesRequest = new Request('/service');
+fetch(servicesRequest)
+.then(function(response) { return response.json(); })
+.then(function(serviceList) {
+  serviceList.forEach(service => {
+    var li = document.createElement("li");
+    var deleteBtn = document.createElement("button");
+    deleteBtn.innerHTML = "Delete";
+    deleteBtn.onclick = function() {deleteService(service.name)};
+    deleteBtn.style.marginRight = "10px";
+    li.appendChild(deleteBtn);
+    li.appendChild(document.createTextNode(service.name + ': ' + service.status));
+    listContainer.appendChild(li);
+  });
+});
+
+const saveButton = document.querySelector('#post-service');
+saveButton.onclick = evt => {
+    let urlName = document.querySelector('#url-name').value;
+
+    if (!isValidUrl(urlName)) {
+        window.alert('Please enter a valid url');
+    } else {
+        if (!urlName.startsWith('https://') && !urlName.startsWith('http://')) {
+            urlName = 'https://' + urlName;
+        }
+        postToEndpoint('/service', urlName);
+    }
+}
+
+function deleteService(urlName) {
+    postToEndpoint('/delete', urlName);
+}
+
+function postToEndpoint(endpoint, urlName) {
+    fetch(endpoint, {
+            method: 'post',
+            headers: {
+            'Accept': 'application/json, text/plain, */*',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({url:urlName})
+        }).then(res => location.reload());
+}
+
+function isValidUrl(url) {
+    var regexp = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/;
+
+    if(regexp.test(url)) {
+        return true;
+    }
+
+    return false;
+}
+
+setInterval(function(){
+   location.reload();
+}, 60000);
+
+</script>
+</html>
