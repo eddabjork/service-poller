@@ -32,6 +32,8 @@ You can also run gradle directly from the command line:
 ./gradlew clean run
 ```
 
+# Edda's list
+
 done
 - make poller work
 - make fronted functional
