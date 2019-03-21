@@ -45,6 +45,6 @@ done
 
 to do
 
-- simultaneous writes to server
+- simultaneous writes to server and file to save services
 - test
 - make pretty
